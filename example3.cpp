@@ -1,5 +1,16 @@
 #include <iostream>
 #include <stdexcept>
+#include <memory>
+
+class ProhibitedCharException : public std::logic_error
+{
+private:
+    const char* message;
+public:
+    explicit ProhibitedCharException(const char *message) : logic_error(message) {
+        this->message = message;
+    }
+};
 
 void validateArguments(int argc)
 {
@@ -18,7 +29,7 @@ public:
         std::cout << "Using resource. Passed " << *arg << std::endl;
         if (*arg == 'd')
         {
-            throw std::logic_error("Passed d. d is prohibited.");
+            throw ProhibitedCharException("Passed d. d is prohibited.");
         }
     }
 };
@@ -26,17 +37,14 @@ public:
 int main(int argc, char* argv[])
 {
     validateArguments(argc);
-
     const char* argument = argv[1];
-    Resource* rsc = nullptr;
 
     try
     {
-        rsc = new Resource();
+        auto rsc = std::make_unique<Resource>();
         rsc->use(argument);
-        delete rsc;
     }
-    catch (std::logic_error& e)
+    catch (ProhibitedCharException& e)
     {
         std::cout << e.what() << std::endl;
     }
