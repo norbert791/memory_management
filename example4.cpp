@@ -10,16 +10,14 @@ void foo()
 class MyPointer
 {
 public:
-    MyPointer(): pointer(new int(15))
+    MyPointer(): pointer(std::make_unique<int>(15))
     {
         foo();
     }
 
-    ~MyPointer()
-    {
-        delete pointer;
-    }
-    int* pointer;
+    ~MyPointer() = default;
+
+    std::unique_ptr<int> pointer;
 };
 
 int main()
@@ -27,7 +25,7 @@ int main()
     try
     {
         MyPointer pointerTest;
-        std::cout << pointerTest.pointer << std::endl;
+        std::cout << pointerTest.pointer.get() << std::endl;
     }
     catch(std::runtime_error const& p_err)
     {
